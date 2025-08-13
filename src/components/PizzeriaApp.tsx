@@ -55,7 +55,7 @@ const PizzeriaApp: React.FC = () => {
         total: pedidoItems.reduce((sum, item) => sum + (item.precio * item.cantidad), 0),
       };
 
-      const response = await fetch('/api/pedidos', {
+      const response = await fetch('https://us-central1-chetegamis-cb3c0.cloudfunctions.net/crearPedido', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

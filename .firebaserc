@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "chetegamis-cb3c0"
+  },
+  "targets": {
+    "chetegamis-cb3c0": {
+      "hosting": {
+        "chetegamis": [
+          "chetegamis-cb3c0"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

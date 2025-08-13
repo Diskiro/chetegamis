@@ -33,7 +33,7 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
 
   const fetchMenu = async () => {
     try {
-      const response = await fetch('/api/menu');
+      const response = await fetch('https://us-central1-chetegamis-cb3c0.cloudfunctions.net/obtenerMenu');
       const data = await response.json();
       
       if (response.ok) {
@@ -137,7 +137,7 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
     try {
       setIsSaving(true);
       setAddError('');
-      const res = await fetch('/api/menu', {
+      const res = await fetch('https://us-central1-chetegamis-cb3c0.cloudfunctions.net/obtenerMenu', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

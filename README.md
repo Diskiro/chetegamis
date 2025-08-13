@@ -1,229 +1,327 @@
-# CHETEGAMIS - Sistema de Pizzería
+# 🍕 CHETEGAMIS - Sistema de Pizzería
 
-Sistema de pedidos para la pizzería CHETEGAMIS desarrollado con Next.js 15, TypeScript y MongoDB Atlas.
+Sistema completo de gestión de pedidos para la pizzería CHETEGAMIS, construido con **Next.js 15**, **TypeScript**, **Tailwind CSS** y **Firebase**.
 
-## 🚀 Características
+## ✨ Características Principales
 
-- **Búsqueda de clientes** por número de teléfono
-- **Registro de nuevos clientes** si no existen
-- **Menú de pizzas** con 4 tamaños y precios
-- **Sistema de pedidos** con selección de items y cantidades
-- **Cálculo automático** de totales
-- **Impresión de órdenes** con formato profesional
-- **Diseño responsivo** con colores de pizzería
+- 🔍 **Búsqueda de Clientes** por número de teléfono
+- 👤 **Gestión de Clientes** (crear nuevos, ver existentes)
+- 🍕 **Menú Dinámico** con precios por tamaños
+- 📝 **Sistema de Pedidos** completo
+- 🖨️ **Impresión de Órdenes** automática
+- 📱 **Diseño Responsivo** para todos los dispositivos
+- 🎨 **UI/UX Moderna** con colores de pizzería
 
-## 🎨 Colores del Tema
+## 🛠️ Tecnologías Utilizadas
 
-- **Rojo llamativo**: `#DC2626` (pizza-red)
-- **Amarillo**: `#F59E0B` (pizza-yellow) 
-- **Crema**: `#FEF3C7` (pizza-cream)
-- **Rojo oscuro**: `#991B1B` (pizza-dark)
-- **Rojo claro**: `#FEE2E2` (pizza-light)
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Estilos**: Tailwind CSS con paleta personalizada
+- **Backend**: Firebase Functions
+- **Base de Datos**: Firestore (Firebase)
+- **Hosting**: Firebase Hosting
+- **Autenticación**: Firebase Auth (preparado para futuro)
 
-## 🛠️ Tecnologías
+## 🚀 Instalación y Configuración
 
-- **Frontend**: Next.js 15, React 18, TypeScript
-- **Styling**: Tailwind CSS con colores personalizados
-- **Base de Datos**: MongoDB Atlas
-- **Deployment**: Vercel (recomendado)
-
-## 📋 Requisitos Previos
+### Prerrequisitos
 
 - Node.js 18+ 
 - npm o yarn
-- Cuenta de MongoDB Atlas
-- Cuenta de Vercel (opcional, para deployment)
+- Cuenta de Firebase
 
-## 🚀 Instalación
+### 1. Clonar el Proyecto
 
-1. **Clonar el repositorio**
-   ```bash
-   git clone https://github.com/Diskiro/chetegamis.git
-   cd chetegamis
-   ```
+```bash
+git clone <tu-repositorio>
+cd chetegamis
+```
 
-2. **Instalar dependencias**
-   ```bash
-   npm install
-   ```
+### 2. Instalar Dependencias
 
-3. **Configurar variables de entorno**
-   
-   Crea un archivo `.env.local` en la raíz del proyecto:
-   ```env
-   MONGODB_URI=mongodb+srv://joshuamedel1994:Chetegamis654@chetegamis.bmhhpvn.mongodb.net/?retryWrites=true&w=majority&appName=Chetegamis
-   NODE_ENV=development
-   ```
+```bash
+npm install
+```
 
-   **Importante**: Reemplaza `username`, `password` y `cluster` con tus credenciales de MongoDB Atlas.
+### 3. Configurar Firebase
 
-4. **Ejecutar en desarrollo**
-   ```bash
-   npm run dev
-   ```
+#### 3.1 Crear Proyecto en Firebase Console
 
-5. **Abrir en el navegador**
-   ```
-   http://localhost:3000
-   ```
+1. Ve a [Firebase Console](https://console.firebase.google.com/)
+2. Crea un nuevo proyecto llamado "chetegamis"
+3. Habilita **Firestore Database** y **Hosting**
 
-## 🗄️ Configuración de MongoDB Atlas
+#### 3.2 Configurar Firestore
 
-### 1. Crear Cluster
-- Ve a [MongoDB Atlas](https://cloud.mongodb.com)
-- Crea un nuevo cluster (gratuito disponible)
-- Selecciona tu región preferida
+1. En Firestore, crea las siguientes colecciones:
+   - `clientes` - Para almacenar información de clientes
+   - `menu` - Para almacenar items del menú
+   - `pedidos` - Para almacenar historial de pedidos
 
-### 2. Configurar Usuario de Base de Datos
-- En "Database Access", crea un nuevo usuario
-- Asigna permisos de "Read and write to any database"
-- Guarda las credenciales
+#### 3.3 Configurar Reglas de Seguridad
 
-### 3. Configurar Red
-- En "Network Access", agrega tu IP o `0.0.0.0/0` para acceso global
-- Para Vercel, agrega `0.0.0.0/0`
+```javascript
+// firestore.rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true; // Para desarrollo - cambiar en producción
+    }
+  }
+}
+```
 
-### 4. Obtener Connection String
-- En "Connect", selecciona "Connect your application"
-- Copia la cadena de conexión
-- Reemplaza `<password>` con la contraseña del usuario
+#### 3.4 Obtener Configuración
 
-## 📊 Estructura de la Base de Datos
+1. En Configuración del Proyecto > General
+2. Copia la configuración de Firebase
+3. Actualiza `src/lib/firebase.ts` con tus credenciales
+
+### 4. Configurar Variables de Entorno
+
+Crea un archivo `.env.local`:
+
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=tu_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=tu_proyecto_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=tu_proyecto.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=tu_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=tu_app_id
+```
+
+### 5. Inicializar Firebase
+
+```bash
+firebase login
+firebase init
+```
+
+**Selecciona:**
+- Hosting
+- Functions
+- Firestore
+- Usa tu proyecto existente
+
+### 6. Poblar Datos Iniciales
+
+```bash
+# Después del deploy, ejecuta esta función para crear datos de ejemplo
+curl -X POST https://us-central1-tu-proyecto.cloudfunctions.net/poblarDatosIniciales
+```
+
+## 🏗️ Estructura del Proyecto
+
+```
+chetegamis/
+├── src/
+│   ├── app/                 # App Router de Next.js
+│   ├── components/          # Componentes React
+│   ├── lib/                 # Utilidades y configuración
+│   └── models/              # Interfaces TypeScript
+├── functions/               # Firebase Functions
+├── public/                  # Archivos estáticos
+├── firebase.json           # Configuración de Firebase
+├── firestore.rules         # Reglas de seguridad de Firestore
+└── firestore.indexes.json  # Índices de Firestore
+```
+
+## 📊 Estructura de la Base de Datos (Firestore)
 
 ### Colección: `clientes`
 ```typescript
 {
-  _id: ObjectId,
-  telefono: string,      // 10 dígitos, único
-  nombre: string,        // Nombre completo
-  direccion: string,     // Dirección completa
-  referencia: string,    // Puntos de referencia
-  createdAt: Date,
-  updatedAt: Date
+  _id: string;           // ID único del documento (Firestore)
+  telefono: string;      // Número de teléfono (10 dígitos)
+  nombre: string;        // Nombre completo del cliente
+  direccion: string;     // Dirección de entrega
+  referencia: string;    // Puntos de referencia
+  createdAt: Timestamp;  // Fecha de creación (Firestore Timestamp)
+  updatedAt: Timestamp;  // Fecha de última actualización
 }
 ```
 
 ### Colección: `menu`
 ```typescript
 {
-  _id: ObjectId,
-  nombre: string,        // Nombre de la pizza
-  precioChico: number,   // Precio tamaño chico
-  precioMediano: number, // Precio tamaño mediano
-  precioGrande: number,  // Precio tamaño grande
-  precioFamiliar: number,// Precio tamaño familiar
-  createdAt: Date,
-  updatedAt: Date
+  _id: string;           // ID único del documento (Firestore)
+  nombre: string;        // Nombre del item
+  precioChico: number;   // Precio tamaño chico
+  precioMediano: number; // Precio tamaño mediano
+  precioGrande: number;  // Precio tamaño grande
+  precioFamiliar: number; // Precio tamaño familiar
+  createdAt: Timestamp;  // Fecha de creación (Firestore Timestamp)
+  updatedAt: Timestamp;  // Fecha de última actualización
 }
 ```
 
 ### Colección: `pedidos`
 ```typescript
 {
-  _id: ObjectId,
-  clienteId: string,     // ID del cliente
-  telefono: string,      // Teléfono del cliente
-  nombre: string,        // Nombre del cliente
-  direccion: string,     // Dirección del cliente
-  referencia: string,    // Referencia del cliente
-  items: PedidoItem[],   // Array de items del pedido
-  total: number,         // Total del pedido
-  createdAt: Date
+  _id: string;           // ID único del documento (Firestore)
+  clienteId: string;     // ID del cliente
+  telefono: string;      // Teléfono del cliente
+  nombre: string;        // Nombre del cliente
+  direccion: string;     // Dirección del cliente
+  referencia: string;    // Referencia del cliente
+  items: PedidoItem[];   // Array de items del pedido
+  total: number;         // Total del pedido
+  estado: string;        // Estado del pedido ('pendiente', 'en_proceso', 'entregado')
+  createdAt: Timestamp;  // Fecha de creación (Firestore Timestamp)
 }
 ```
 
-## 🌐 Deployment en Vercel
+## 🚀 Despliegue
 
-1. **Conectar repositorio**
-   - Ve a [Vercel](https://vercel.com)
-   - Conecta tu repositorio de GitHub/GitLab
+### Desplegar a Firebase
 
-2. **Configurar variables de entorno**
-   - En el dashboard de Vercel, ve a Settings > Environment Variables
-   - Agrega `MONGODB_URI` con tu cadena de conexión de MongoDB Atlas
+```bash
+# Build del proyecto
+npm run build:firebase
 
-3. **Deploy**
-   - Vercel detectará automáticamente que es un proyecto Next.js
-   - Haz commit y push para trigger automático del deploy
+# Deploy completo
+firebase deploy
 
-## 📱 Uso del Sistema
+# Solo hosting
+firebase deploy --only hosting
 
-### 1. Búsqueda de Cliente
-- Ingresa un número de teléfono de 10 dígitos
-- El botón "Buscar" se activa automáticamente
-- Si el cliente existe, se muestran sus datos
+# Solo functions
+firebase deploy --only functions
 
-### 2. Registro de Nuevo Cliente
-- Si el cliente no existe, se despliega un formulario
-- Completa: nombre, dirección y referencia
-- Guarda los datos en la base de datos
+# Solo Firestore
+firebase deploy --only firestore
+```
 
-### 3. Realización del Pedido
-- Se muestra la tabla del menú con todos los items
-- Selecciona pizzas y tamaños con checkboxes
-- Ajusta cantidades según necesites
-- El total se calcula automáticamente
+### URLs de Despliegue
 
-### 4. Impresión de Orden
-- Al hacer clic en "Imprimir Orden":
-  - Se guarda el pedido en la base de datos
-  - Se abre una ventana de impresión
-  - Se imprime la orden con formato profesional
-  - El sistema se reinicia automáticamente
+- **Hosting**: `https://tu-proyecto.web.app`
+- **Functions**: `https://us-central1-tu-proyecto.cloudfunctions.net`
+- **Firestore**: Accesible desde Firebase Console
 
-## 🔧 Personalización
+## 🎨 Personalización
 
-### Agregar Nuevas Pizzas al Menú
-1. Ve a la colección `menu` en MongoDB Atlas
-2. Agrega un nuevo documento con la estructura del menú
-3. Los cambios se reflejan automáticamente en la aplicación
+### Colores de la Pizzería
 
-### Modificar Colores
-1. Edita `tailwind.config.ts`
-2. Modifica los colores en la sección `extend.colors`
-3. Reinicia el servidor de desarrollo
+Los colores están definidos en `tailwind.config.ts`:
 
-### Cambiar Logo
-1. Reemplaza el emoji 🍕 en `Header.tsx`
-2. O agrega una imagen en `public/` y referenciala
+```typescript
+colors: {
+  'pizza-red': '#DC2626',      // Rojo llamativo
+  'pizza-yellow': '#F59E0B',   // Amarillo que combina
+  'pizza-cream': '#FEF3C7',    // Color crema
+  'pizza-dark': '#991B1B',     // Rojo oscuro
+  'pizza-light': '#FEE2E2',    // Rojo claro
+}
+```
+
+### Modificar el Logo
+
+Reemplaza el emoji 🍕 en `src/components/Header.tsx` con tu logo personalizado.
+
+## 🔧 Funciones de Firebase
+
+### `buscarCliente`
+- **GET**: Busca cliente por teléfono en Firestore
+- **POST**: Crea nuevo cliente en Firestore
+
+### `obtenerMenu`
+- **GET**: Obtiene todos los items del menú desde Firestore
+- **POST**: Agrega nuevo item al menú en Firestore
+
+### `crearPedido`
+- **POST**: Crea nuevo pedido en Firestore
+
+### `poblarDatosIniciales`
+- **POST**: Crea datos de ejemplo en Firestore (solo una vez)
 
 ## 🐛 Solución de Problemas
 
-### Error de Conexión a MongoDB
-- Verifica que `MONGODB_URI` esté correctamente configurado
-- Asegúrate de que tu IP esté en la whitelist de MongoDB Atlas
-- Verifica que el usuario tenga permisos correctos
+### Error: "Functions not found"
+```bash
+firebase deploy --only functions
+```
 
-### Error de Build en Vercel
-- Verifica que todas las variables de entorno estén configuradas
-- Revisa los logs de build en Vercel
-- Asegúrate de que el proyecto compile localmente
+### Error: "Hosting not configured"
+```bash
+firebase init hosting
+```
 
-### Problemas de Rendimiento
-- La aplicación está optimizada para Next.js 15
-- Considera usar MongoDB Atlas M10+ para producción
-- Implementa caching si es necesario
+### Error: "Firestore rules not set"
+```bash
+firebase deploy --only firestore:rules
+```
 
-## 📄 Licencia
+### Error: "Build failed"
+```bash
+npm run build:firebase
+# Verifica que no haya errores de TypeScript
+```
 
-Este proyecto está bajo la licencia MIT.
+## 📱 Uso de la Aplicación
 
-## 🤝 Contribuciones
+### 1. Búsqueda de Cliente
+- Ingresa un número de teléfono de 10 dígitos
+- Si existe, se muestra la información desde Firestore
+- Si no existe, se abre formulario de creación
 
-Las contribuciones son bienvenidas. Por favor:
+### 2. Creación de Cliente
+- Completa nombre, dirección y referencia
+- El teléfono se pre-llena automáticamente
+- Los datos se guardan en Firestore
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+### 3. Selección de Menú
+- Marca los items que quieres ordenar
+- Selecciona el tamaño (chico, mediano, grande, familiar)
+- Ajusta la cantidad
+- Los datos del menú vienen de Firestore
+
+### 4. Finalización del Pedido
+- Revisa el resumen del pedido
+- Imprime la orden
+- El pedido se guarda en Firestore
+- La aplicación se reinicia automáticamente
+
+## 🔒 Seguridad
+
+### Reglas de Firestore (Producción)
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /clientes/{clienteId} {
+      allow read, write: if request.auth != null;
+    }
+    match /menu/{menuId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /pedidos/{pedidoId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+```
+
+## 🚀 Próximas Funcionalidades
+
+- [ ] **Autenticación de Usuarios** con Firebase Auth
+- [ ] **Panel de Administración** para empleados
+- [ ] **Historial de Pedidos** por cliente
+- [ ] **Notificaciones Push** para estado del pedido
+- [ ] **Sistema de Pagos** integrado
+- [ ] **Reportes y Estadísticas** de ventas
 
 ## 📞 Soporte
 
-Para soporte técnico o preguntas:
-- Abre un issue en GitHub
-- Contacta al equipo de desarrollo
+Para soporte técnico o preguntas sobre el proyecto:
+
+- **Email**: [tu-email@ejemplo.com]
+- **GitHub**: [tu-usuario/chetegamis]
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 
 ---
 
-**CHETEGAMIS** - La mejor pizza de la ciudad 🍕
+**🍕 CHETEGAMIS - La mejor pizza de la ciudad 🍕**

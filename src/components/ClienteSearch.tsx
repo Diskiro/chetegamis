@@ -22,7 +22,7 @@ const ClienteSearch: React.FC<ClienteSearchProps> = ({ onClienteFound, onCliente
     setError('');
 
     try {
-      const response = await fetch(`/api/clientes?telefono=${telefono}`);
+      const response = await fetch(`https://us-central1-chetegamis-cb3c0.cloudfunctions.net/buscarCliente?telefono=${telefono}`);
       const data = await response.json();
 
       if (response.ok) {

@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Reglas para clientes
+    match /clientes/{clienteId} {
+      allow read, write: if true; // Para desarrollo - cambiar en producción
+    }
+    
+    // Reglas para menú
+    match /menu/{menuId} {
+      allow read: if true; // Cualquiera puede leer el menú
+      allow write: if true; // Para desarrollo - cambiar en producción
+    }
+    
+    // Reglas para pedidos
+    match /pedidos/{pedidoId} {
+      allow read, write: if true; // Para desarrollo - cambiar en producción
+    }
+  }
+} 

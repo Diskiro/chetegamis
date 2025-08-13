@@ -7,11 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "node scripts/seed-data.js"
+    "build:firebase": "next build",
+    "deploy": "npm run build:firebase && firebase deploy"
   },
   "dependencies": {
-    "mongodb": "^6.18.0",
-    "mongoose": "^8.17.1",
+    "firebase": "^10.14.1",
     "next": "15.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0"
@@ -19,7 +19,6 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
-    "@types/mongodb": "^4.0.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

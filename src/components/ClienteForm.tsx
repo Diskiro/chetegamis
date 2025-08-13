@@ -39,7 +39,7 @@ const ClienteForm: React.FC<ClienteFormProps> = ({ telefono, onClienteCreated, o
     setError('');
 
     try {
-      const response = await fetch('/api/clientes', {
+      const response = await fetch('https://us-central1-chetegamis-cb3c0.cloudfunctions.net/buscarCliente', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
