@@ -1,7 +1,7 @@
 export interface PedidoItem {
   menuItemId: string;
   nombre: string;
-  tamanio: 'individual' | 'chica' | 'mediana' | 'familiar';
+  tamanio: 'individual' | 'chica' | 'mediana' | 'familiar' | 'sencilla' | 'doble' | 'unico';
   precio: number;
   cantidad: number;
 }

@@ -37,7 +37,6 @@ const PizzeriaApp: React.FC = () => {
   };
 
   const handleEnRestaurante = () => {
-    // Crear un cliente temporal para pedidos en restaurante
     const clienteRestaurante: Cliente = {
       _id: 'restaurante',
       nombre: 'Cliente en Restaurante',
@@ -58,7 +57,6 @@ const PizzeriaApp: React.FC = () => {
     if (!cliente || pedidoItems.length === 0) return;
 
     try {
-      // Crear el pedido en la base de datos
       const pedidoData = {
         clienteId: cliente._id,
         telefono: cliente.telefono,
@@ -72,14 +70,11 @@ const PizzeriaApp: React.FC = () => {
 
       const response = await fetch('https://us-central1-chetegamis-cb3c0.cloudfunctions.net/crearPedido', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(pedidoData),
       });
 
       if (response.ok) {
-        // Imprimir la orden
         const printWindow = window.open('', '_blank');
         if (printWindow) {
           const tamanioLabel: Record<PedidoItem['tamanio'], string> = {
@@ -87,6 +82,9 @@ const PizzeriaApp: React.FC = () => {
             chica: 'Chica',
             mediana: 'Mediana',
             familiar: 'Familiar',
+            sencilla: 'Sencillo',
+            doble: 'Doble',
+            unico: 'Único',
           };
 
           printWindow.document.write(`
@@ -184,7 +182,6 @@ const PizzeriaApp: React.FC = () => {
           printWindow.print();
         }
 
-        // Limpiar todo y volver al estado inicial
         setTimeout(() => {
           setCliente(null);
           setPedidoItems([]);
@@ -208,7 +205,6 @@ const PizzeriaApp: React.FC = () => {
             onEnRestaurante={handleEnRestaurante}
           />
         );
-      
       case 'creating':
         return (
           <ClienteForm
@@ -217,7 +213,6 @@ const PizzeriaApp: React.FC = () => {
             onCancel={handleCancelCreation}
           />
         );
-      
       case 'ordering':
         return (
           <div className="space-y-6">
@@ -226,7 +221,6 @@ const PizzeriaApp: React.FC = () => {
             <PedidoSummary items={pedidoItems} onImprimir={handleImprimir} />
           </div>
         );
-      
       default:
         return null;
     }

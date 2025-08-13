@@ -17,6 +17,9 @@ const PedidoSummary: React.FC<PedidoSummaryProps> = ({ items, onImprimir }) => {
     chica: 'Chica',
     mediana: 'Mediana',
     familiar: 'Familiar',
+    sencilla: 'Sencillo',
+    doble: 'Doble',
+    unico: 'Único',
   };
 
   if (items.length === 0) {
