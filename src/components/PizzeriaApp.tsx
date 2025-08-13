@@ -36,11 +36,25 @@ const PizzeriaApp: React.FC = () => {
     setCurrentState('searching');
   };
 
+  const handleEnRestaurante = () => {
+    // Crear un cliente temporal para pedidos en restaurante
+    const clienteRestaurante: Cliente = {
+      _id: 'restaurante',
+      nombre: 'Cliente en Restaurante',
+      telefono: '0000000000',
+      direccion: 'En Restaurante',
+      referencia: 'Mesa',
+      createdAt: new Date()
+    };
+    setCliente(clienteRestaurante);
+    setCurrentState('ordering');
+  };
+
   const handlePedidoChange = (items: PedidoItem[]) => {
     setPedidoItems(items);
   };
 
-  const handleImprimir = async () => {
+  const handleImprimir = async (empleado: string) => {
     if (!cliente || pedidoItems.length === 0) return;
 
     try {
@@ -51,6 +65,7 @@ const PizzeriaApp: React.FC = () => {
         nombre: cliente.nombre,
         direccion: cliente.direccion,
         referencia: cliente.referencia,
+        empleado: empleado,
         items: pedidoItems,
         total: pedidoItems.reduce((sum, item) => sum + (item.precio * item.cantidad), 0),
       };
@@ -67,6 +82,13 @@ const PizzeriaApp: React.FC = () => {
         // Imprimir la orden
         const printWindow = window.open('', '_blank');
         if (printWindow) {
+          const tamanioLabel: Record<PedidoItem['tamanio'], string> = {
+            individual: 'Individual',
+            chica: 'Chica',
+            mediana: 'Mediana',
+            familiar: 'Familiar',
+          };
+
           printWindow.document.write(`
             <html>
               <head>
@@ -75,6 +97,7 @@ const PizzeriaApp: React.FC = () => {
                   body { font-family: Arial, sans-serif; margin: 20px; }
                   .header { text-align: center; margin-bottom: 30px; }
                   .cliente-info { margin-bottom: 30px; }
+                  .empleado-info { margin-bottom: 20px; }
                   .items { margin-bottom: 30px; }
                   .total { font-size: 18px; font-weight: bold; text-align: right; }
                   table { width: 100%; border-collapse: collapse; }
@@ -88,6 +111,11 @@ const PizzeriaApp: React.FC = () => {
                   <p>La mejor pizza de la ciudad</p>
                   <p>Fecha: ${new Date().toLocaleDateString()}</p>
                   <p>Hora: ${new Date().toLocaleTimeString()}</p>
+                </div>
+                
+                <div class="empleado-info">
+                  <h2>Empleado</h2>
+                  <p><strong>Atendido por:</strong> ${empleado}</p>
                 </div>
                 
                 <div class="cliente-info">
@@ -114,7 +142,7 @@ const PizzeriaApp: React.FC = () => {
                       ${pedidoItems.map(item => `
                         <tr>
                           <td>${item.nombre}</td>
-                          <td>${item.tamanio}</td>
+                          <td>${tamanioLabel[item.tamanio]}</td>
                           <td>${item.cantidad}</td>
                           <td>$${item.precio.toFixed(2)}</td>
                           <td>$${(item.precio * item.cantidad).toFixed(2)}</td>
@@ -123,14 +151,31 @@ const PizzeriaApp: React.FC = () => {
                     </tbody>
                   </table>
                 </div>
-                
+
                 <div class="total">
                   <p>Total: $${pedidoItems.reduce((sum, item) => sum + (item.precio * item.cantidad), 0).toFixed(2)}</p>
                 </div>
-                
-                <div style="margin-top: 50px; text-align: center;">
-                  <p>¡Gracias por tu pedido!</p>
-                  <p>Tu pizza estará lista pronto 🍕</p>
+
+                <div class="items">
+                  <h2>Items del Pedido (Copia para cocina)</h2>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Item</th>
+                        <th>Tamaño</th>
+                        <th>Cantidad</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${pedidoItems.map(item => `
+                        <tr>
+                          <td>${item.nombre}</td>
+                          <td>${tamanioLabel[item.tamanio]}</td>
+                          <td>${item.cantidad}</td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
                 </div>
               </body>
             </html>
@@ -160,6 +205,7 @@ const PizzeriaApp: React.FC = () => {
           <ClienteSearch
             onClienteFound={handleClienteFound}
             onClienteNotFound={handleClienteNotFound}
+            onEnRestaurante={handleEnRestaurante}
           />
         );
       

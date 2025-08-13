@@ -8,7 +8,7 @@ interface MenuTableProps {
   onPedidoChange: (items: PedidoItem[]) => void;
 }
 
-const tamaniosConst = ['chico', 'mediano', 'grande', 'familiar'] as const;
+const tamaniosConst = ['individual', 'chica', 'mediana', 'familiar'] as const;
 
 type Tamanio = typeof tamaniosConst[number];
 
@@ -46,14 +46,20 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
     }
   };
 
+  const getDisplayedCantidad = (menuItem: MenuItem): number => {
+    const item = selectedItems.find(item => item.menuItemId === menuItem._id);
+    return item ? item.cantidad : 1;
+  };
+
   const handleItemSelection = (menuItem: MenuItem, tamanio: Tamanio, isSelected: boolean) => {
     if (isSelected) {
+      const cantidadActual = getDisplayedCantidad(menuItem);
       const newItem: PedidoItem = {
         menuItemId: menuItem._id || '',
         nombre: menuItem.nombre,
         tamanio,
         precio: getPrecioByTamanio(menuItem, tamanio),
-        cantidad: 1,
+        cantidad: cantidadActual,
       };
       
       const updatedItems = [...selectedItems, newItem];
@@ -68,10 +74,11 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
     }
   };
 
-  const handleCantidadChange = (menuItem: MenuItem, tamanio: Tamanio, cantidad: number) => {
+  const handleCantidadChange = (menuItem: MenuItem, cantidad: number) => {
+    const cantidadNormalizada = Number.isFinite(cantidad) && cantidad > 0 ? cantidad : 1;
     const updatedItems = selectedItems.map(item => {
-      if (item.menuItemId === menuItem._id && item.tamanio === tamanio) {
-        return { ...item, cantidad };
+      if (item.menuItemId === menuItem._id) {
+        return { ...item, cantidad: cantidadNormalizada };
       }
       return item;
     });
@@ -82,9 +89,9 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
 
   const getPrecioByTamanio = (menuItem: MenuItem, tamanio: Tamanio): number => {
     switch (tamanio) {
-      case 'chico': return menuItem.precioChico;
-      case 'mediano': return menuItem.precioMediano;
-      case 'grande': return menuItem.precioGrande;
+      case 'individual': return menuItem.precioChico;
+      case 'chica': return menuItem.precioMediano;
+      case 'mediana': return menuItem.precioGrande;
       case 'familiar': return menuItem.precioFamiliar;
       default: return 0;
     }
@@ -94,13 +101,6 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
     return selectedItems.some(item => 
       item.menuItemId === menuItem._id && item.tamanio === tamanio
     );
-  };
-
-  const getItemCantidad = (menuItem: MenuItem, tamanio: Tamanio): number => {
-    const item = selectedItems.find(item => 
-      item.menuItemId === menuItem._id && item.tamanio === tamanio
-    );
-    return item ? item.cantidad : 1;
   };
 
   const toggleAddForm = () => {
@@ -180,9 +180,9 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
             <tr>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Ordenado</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nombre</th>
-              <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Chico</th>
-              <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Mediano</th>
-              <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Grande</th>
+              <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Individual</th>
+              <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Chica</th>
+              <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Mediana</th>
               <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Familiar</th>
               <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Cantidad</th>
             </tr>
@@ -195,9 +195,9 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
                     type="checkbox"
                     checked={selectedItems.some(item => item.menuItemId === menuItem._id)}
                     onChange={(e) => {
-                      // Si se selecciona el checkbox principal, seleccionar el tamaño mediano por defecto
+                      // Si se selecciona el checkbox principal, seleccionar el tamaño mediana por defecto
                       if (e.target.checked) {
-                        handleItemSelection(menuItem, 'mediano', true);
+                        handleItemSelection(menuItem, 'mediana', true);
                       } else {
                         // Deseleccionar todos los tamaños
                         const tamanios: Array<Tamanio> = [...tamaniosConst];
@@ -233,16 +233,10 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
                       type="number"
                       min="1"
                       max="99"
-                      value={getItemCantidad(menuItem, 'mediano')}
+                      value={getDisplayedCantidad(menuItem)}
                       onChange={(e) => {
                         const cantidad = parseInt(e.target.value) || 1;
-                        // Actualizar cantidad para todos los tamaños seleccionados
-                        const tamanios: Array<Tamanio> = [...tamaniosConst];
-                        tamanios.forEach(tamanio => {
-                          if (isItemSelected(menuItem, tamanio)) {
-                            handleCantidadChange(menuItem, tamanio, cantidad);
-                          }
-                        });
+                        handleCantidadChange(menuItem, cantidad);
                       }}
                       className="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm text-black"
                     />
@@ -255,15 +249,36 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
       </div>
 
       <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
-        <button
-          onClick={toggleAddForm}
-          className="inline-flex items-center px-4 py-2 bg-pizza-yellow hover:bg-yellow-500 text-pizza-dark font-semibold rounded-md shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-yellow-200"
-        >
-          {showAddForm ? 'Cancelar' : 'Agregar al menú'}
-        </button>
+        {!showAddForm && (
+          <button
+            onClick={toggleAddForm}
+            className="inline-flex items-center px-4 py-2 bg-pizza-yellow hover:bg-yellow-500 text-pizza-dark font-semibold rounded-md shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-yellow-200"
+          >
+            Agregar al menú
+          </button>
+        )}
 
         {showAddForm && (
-          <form onSubmit={handleAddItem} className="mt-4 grid grid-cols-1 md:grid-cols-5 gap-3">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleAddForm}
+              className="inline-flex items-center px-4 py-2 bg-gray-200 hover:bg-gray-300 text-black font-semibold rounded-md shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-gray-200"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              form="add-menu-form"
+              disabled={isSaving}
+              className="inline-flex items-center px-4 py-2 bg-pizza-red hover:bg-pizza-dark text-white font-semibold rounded-md disabled:opacity-50 shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-pizza-light"
+            >
+              {isSaving ? 'Guardando...' : 'Guardar'}
+            </button>
+          </div>
+        )}
+
+        {showAddForm && (
+          <form id="add-menu-form" onSubmit={handleAddItem} className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-3">
             <input
               type="text"
               name="nombre"
@@ -278,7 +293,7 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
               name="precioChico"
               value={addForm.precioChico}
               onChange={handleAddFormChange}
-              placeholder="Precio Chico"
+              placeholder="Precio Individual"
               className="px-3 py-2 border border-gray-300 rounded-md text-black"
               min="0"
               step="0.01"
@@ -289,7 +304,7 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
               name="precioMediano"
               value={addForm.precioMediano}
               onChange={handleAddFormChange}
-              placeholder="Precio Mediano"
+              placeholder="Precio Chica"
               className="px-3 py-2 border border-gray-300 rounded-md text-black"
               min="0"
               step="0.01"
@@ -300,35 +315,25 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
               name="precioGrande"
               value={addForm.precioGrande}
               onChange={handleAddFormChange}
-              placeholder="Precio Grande"
+              placeholder="Precio Mediana"
               className="px-3 py-2 border border-gray-300 rounded-md text-black"
               min="0"
               step="0.01"
               required
             />
-            <div className="flex gap-3">
-              <input
-                type="number"
-                name="precioFamiliar"
-                value={addForm.precioFamiliar}
-                onChange={handleAddFormChange}
-                placeholder="Precio Familiar"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-black"
-                min="0"
-                step="0.01"
-                required
-              />
-              <button
-                type="submit"
-                disabled={isSaving}
-                className="px-4 py-2 bg-pizza-red hover:bg-pizza-dark text-white font-semibold rounded-md disabled:opacity-50 shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-pizza-light"
-              >
-                {isSaving ? 'Guardando...' : 'Guardar'}
-              </button>
-            </div>
-
+            <input
+              type="number"
+              name="precioFamiliar"
+              value={addForm.precioFamiliar}
+              onChange={handleAddFormChange}
+              placeholder="Precio Familiar"
+              className="px-3 py-2 border border-gray-300 rounded-md text-black md:col-span-4"
+              min="0"
+              step="0.01"
+              required
+            />
             {addError && (
-              <div className="md:col-span-5 text-red-600 text-sm">{addError}</div>
+              <div className="md:col-span-4 text-red-600 text-sm">{addError}</div>
             )}
           </form>
         )}

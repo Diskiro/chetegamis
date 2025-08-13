@@ -1,19 +1,33 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { PedidoItem } from '@/models/Pedido';
 
 interface PedidoSummaryProps {
   items: PedidoItem[];
-  onImprimir: () => void;
+  onImprimir: (empleado: string) => void;
 }
 
 const PedidoSummary: React.FC<PedidoSummaryProps> = ({ items, onImprimir }) => {
+  const [empleado, setEmpleado] = useState('');
   const total = items.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+
+  const tamanioLabel: Record<PedidoItem['tamanio'], string> = {
+    individual: 'Individual',
+    chica: 'Chica',
+    mediana: 'Mediana',
+    familiar: 'Familiar',
+  };
 
   if (items.length === 0) {
     return null;
   }
+
+  const handleImprimir = () => {
+    if (empleado.trim()) {
+      onImprimir(empleado.trim());
+    }
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -25,7 +39,7 @@ const PedidoSummary: React.FC<PedidoSummaryProps> = ({ items, onImprimir }) => {
             <div className="flex-1">
               <span className="font-medium text-gray-900">{item.nombre}</span>
               <span className="text-sm text-gray-500 ml-2 capitalize">
-                ({item.tamanio})
+                ({tamanioLabel[item.tamanio]})
               </span>
             </div>
             <div className="text-right">
@@ -44,9 +58,29 @@ const PedidoSummary: React.FC<PedidoSummaryProps> = ({ items, onImprimir }) => {
           <span className="text-2xl font-bold text-pizza-red">${total.toFixed(2)}</span>
         </div>
         
+        <div className="mb-4">
+          <label htmlFor="empleado" className="block text-sm font-medium text-gray-700 mb-2">
+            Empleado *
+          </label>
+          <input
+            type="text"
+            id="empleado"
+            value={empleado}
+            onChange={(e) => setEmpleado(e.target.value)}
+            placeholder="Nombre del empleado"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pizza-red focus:border-transparent text-black placeholder-gray-400"
+            required
+          />
+        </div>
+        
         <button
-          onClick={onImprimir}
-          className="w-full bg-pizza-yellow hover:bg-yellow-500 text-pizza-dark font-bold py-3 px-4 rounded-md transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-yellow-200"
+          onClick={handleImprimir}
+          disabled={!empleado.trim()}
+          className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
+            empleado.trim()
+              ? 'bg-pizza-yellow hover:bg-yellow-500 text-pizza-dark shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-yellow-200'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          }`}
         >
           🖨️ Imprimir Orden
         </button>

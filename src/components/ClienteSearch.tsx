@@ -6,9 +6,10 @@ import { Cliente } from '@/models/Cliente';
 interface ClienteSearchProps {
   onClienteFound: (cliente: Cliente) => void;
   onClienteNotFound: (telefono: string) => void;
+  onEnRestaurante: () => void;
 }
 
-const ClienteSearch: React.FC<ClienteSearchProps> = ({ onClienteFound, onClienteNotFound }) => {
+const ClienteSearch: React.FC<ClienteSearchProps> = ({ onClienteFound, onClienteNotFound, onEnRestaurante }) => {
   const [telefono, setTelefono] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -89,6 +90,13 @@ const ClienteSearch: React.FC<ClienteSearchProps> = ({ onClienteFound, onCliente
           }`}
         >
           {isLoading ? 'Buscando...' : 'Buscar'}
+        </button>
+
+        <button
+          onClick={onEnRestaurante}
+          className="w-full py-3 px-4 rounded-md font-medium transition-colors bg-pizza-yellow hover:bg-yellow-500 text-pizza-dark shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-yellow-200"
+        >
+          En restaurante
         </button>
       </div>
     </div>

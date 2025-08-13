@@ -24,3 +24,19 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Estilos globales para h1, h2 y botones con texto negro */
+h1, h2, h3, h4, h5, h6 {
+  color: #000000 !important;
+}
+
+button {
+  color: #000000 !important;
+}
+
+/* Excepción para botones con texto blanco específicos */
+button.bg-pizza-red,
+button.bg-pizza-red:hover,
+button.bg-pizza-red:focus {
+  color: #ffffff;
+}

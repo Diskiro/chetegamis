@@ -1,7 +1,7 @@
 export interface PedidoItem {
   menuItemId: string;
   nombre: string;
-  tamanio: 'chico' | 'mediano' | 'grande' | 'familiar';
+  tamanio: 'individual' | 'chica' | 'mediana' | 'familiar';
   precio: number;
   cantidad: number;
 }
@@ -13,6 +13,7 @@ export interface Pedido {
   nombre: string;
   direccion: string;
   referencia: string;
+  empleado: string;
   items: PedidoItem[];
   total: number;
   createdAt?: Date;
@@ -24,6 +25,7 @@ export interface PedidoFormData {
   nombre: string;
   direccion: string;
   referencia: string;
+  empleado: string;
   items: PedidoItem[];
   total: number;
 } 
