@@ -8,6 +8,7 @@ export interface PedidoItem {
 
 export interface Pedido {
   _id?: string;
+  numeroOrden: string; // Agregado: número de orden del 00001 al 10000
   clienteId: string;
   telefono: string;
   nombre: string;
@@ -20,6 +21,7 @@ export interface Pedido {
 }
 
 export interface PedidoFormData {
+  numeroOrden: string; // Agregado: número de orden del 00001 al 10000
   clienteId: string;
   telefono: string;
   nombre: string;

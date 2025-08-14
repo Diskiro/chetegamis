@@ -154,7 +154,7 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
 
   const getDisplayedCantidad = (menuItem: MenuItem): number => {
     const item = selectedItems.find(item => item.menuItemId === menuItem._id);
-    return item ? item.cantidad : 1;
+    return item ? item.cantidad : 0; // Cambiado de 1 a 0
   };
 
   const handleItemSelection = (menuItem: MenuItem, tamanio: Tamanio, isSelected: boolean) => {
@@ -182,7 +182,7 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
   };
 
   const handleCantidadChange = (menuItem: MenuItem, cantidad: number) => {
-    const cantidadNormalizada = Number.isFinite(cantidad) && cantidad > 0 ? cantidad : 1;
+    const cantidadNormalizada = Number.isFinite(cantidad) && cantidad >= 0 ? cantidad : 0; // Cambiado para permitir 0
     setSelectedItems(prev => {
       const updated = prev.map(item => item.menuItemId === menuItem._id ? { ...item, cantidad: cantidadNormalizada } : item);
       onPedidoChange(updated);
@@ -357,13 +357,14 @@ const MenuTable: React.FC<MenuTableProps> = ({ onPedidoChange }) => {
                     {selectedItems.some(item => item.menuItemId === menuItem._id) && (
                       <input
                         type="number"
-                        min="1"
+                        min="0"
                         max="99"
-                        value={getDisplayedCantidad(menuItem)}
+                        value={getDisplayedCantidad(menuItem) || ''} // Cambiado para mostrar vacío cuando es 0
                         onChange={(e) => {
-                          const cantidad = parseInt(e.target.value) || 1;
+                          const cantidad = parseInt(e.target.value) || 0; // Cambiado para permitir 0
                           handleCantidadChange(menuItem, cantidad);
                         }}
+                        placeholder="0" // Agregado placeholder
                         className="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm text-black"
                       />
                     )}

@@ -196,10 +196,25 @@ exports.crearPedido = functions.https.onRequest(async (req, res) => {
   if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
   if (req.method === 'POST') {
     try {
-      const { clienteId, telefono, nombre, direccion, referencia, items, total } = req.body;
-      if (!clienteId || !telefono || !nombre || !direccion || !referencia || !items || total === undefined) { res.status(400).json({ error: 'Todos los campos son requeridos' }); return; }
+      const { numeroOrden, clienteId, telefono, nombre, direccion, referencia, empleado, items, total } = req.body;
+      if (!numeroOrden || !clienteId || !telefono || !nombre || !direccion || !referencia || !empleado || !items || total === undefined) { 
+        res.status(400).json({ error: 'Todos los campos son requeridos' }); 
+        return; 
+      }
       if (items.length === 0) { res.status(400).json({ error: 'El pedido debe tener al menos un item' }); return; }
-      const nuevoPedido = { clienteId, telefono, nombre, direccion, referencia, items, total: Number(total), createdAt: admin.firestore.FieldValue.serverTimestamp(), estado: 'pendiente' };
+      const nuevoPedido = { 
+        numeroOrden, 
+        clienteId, 
+        telefono, 
+        nombre, 
+        direccion, 
+        referencia, 
+        empleado, 
+        items, 
+        total: Number(total), 
+        createdAt: admin.firestore.FieldValue.serverTimestamp(), 
+        estado: 'pendiente' 
+      };
       const pedidosRef = db.collection('pedidos');
       const docRef = await pedidosRef.add(nuevoPedido);
       nuevoPedido._id = docRef.id;

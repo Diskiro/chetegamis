@@ -16,6 +16,21 @@ const PizzeriaApp: React.FC = () => {
   const [cliente, setCliente] = useState<Cliente | null>(null);
   const [pedidoItems, setPedidoItems] = useState<PedidoItem[]>([]);
   const [searchedTelefono, setSearchedTelefono] = useState<string>('');
+  const [numeroOrden, setNumeroOrden] = useState<string>('00001'); // Agregado: número de orden actual
+
+  // Función para generar el siguiente número de orden
+  const generarSiguienteNumeroOrden = () => {
+    const numeroActual = parseInt(numeroOrden);
+    if (numeroActual >= 10000) {
+      setNumeroOrden('00001');
+      return '00001';
+    } else {
+      const siguiente = numeroActual + 1;
+      const siguienteFormateado = siguiente.toString().padStart(5, '0');
+      setNumeroOrden(siguienteFormateado);
+      return siguienteFormateado;
+    }
+  };
 
   const handleClienteFound = (clienteEncontrado: Cliente) => {
     setCliente(clienteEncontrado);
@@ -56,8 +71,12 @@ const PizzeriaApp: React.FC = () => {
   const handleImprimir = async (empleado: string) => {
     if (!cliente || pedidoItems.length === 0) return;
 
+    // Generar el siguiente número de orden
+    const numeroOrdenActual = generarSiguienteNumeroOrden();
+
     try {
       const pedidoData = {
+        numeroOrden: numeroOrdenActual, // Agregado: número de orden
         clienteId: cliente._id,
         telefono: cliente.telefono,
         nombre: cliente.nombre,
@@ -94,6 +113,7 @@ const PizzeriaApp: React.FC = () => {
                 <style>
                   body { font-family: Arial, sans-serif; margin: 20px; }
                   .header { text-align: center; margin-bottom: 30px; }
+                  .numero-orden { text-align: center; margin-bottom: 20px; font-size: 24px; font-weight: bold; }
                   .cliente-info { margin-bottom: 30px; }
                   .empleado-info { margin-bottom: 20px; }
                   .items { margin-bottom: 30px; }
@@ -107,6 +127,13 @@ const PizzeriaApp: React.FC = () => {
                 <div class="header">
                   <h1>🍕 CHETEGAMIS 🍕</h1>
                   <p>La mejor pizza de la ciudad</p>
+                </div>
+                
+                <div class="numero-orden">
+                  <h2>Orden #${numeroOrdenActual}</h2>
+                </div>
+                
+                <div class="header">
                   <p>Fecha: ${new Date().toLocaleDateString()}</p>
                   <p>Hora: ${new Date().toLocaleTimeString()}</p>
                 </div>
